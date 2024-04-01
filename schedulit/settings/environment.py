@@ -2,28 +2,28 @@
 # The idea is to provide a way to import settings from the environment variables
 # rather than having them hardcoded in active.py. This can allow easy setup of
 # environments for docker launching
+from enum import Enum
+
 import environ
 
 env = environ.Env()
 environ.Env.read_env()
 
 
-class ENVIRONMENTS:
+class Environments(Enum):
     PRODUCTION = 'PRODUCTION'
-    SANDBOX = 'SANDBOX'
     DEV = 'DEV'
 
 
-ENVIRONMENT = env.str('ENVIRONMENT', '')
+environment_name = env.str('ENVIRONMENT', '').upper()
 
-ENVIRONMENT = ENVIRONMENT.upper()
-
-if ENVIRONMENT == ENVIRONMENTS.PRODUCTION:
+if environment_name == Environments.PRODUCTION.value:
+    ENVIRONMENT = Environments.PRODUCTION
     # noinspection PyUnresolvedReferences
     from schedulit.settings.prod import *
 else:
     # Ignoring invalid environment names and defaulting to dev
-    ENVIRONMENT = ENVIRONMENTS.DEV
+    ENVIRONMENT = Environments.DEV
     # noinspection PyUnresolvedReferences
     from schedulit.settings.dev import *
 

@@ -33,3 +33,15 @@ to access those services is replacing `localhost` by `host.docker.internal`.
 ### Execute server with docker:
 
     docker-compose up --build
+
+
+## Linters / Inspections
+
+Code analysis tools are setup to ensure better code quality.
+
+    flake8
+    pylint schedulit
+
+Code typing anotations are checked using mypy
+
+    mypy schedulit
