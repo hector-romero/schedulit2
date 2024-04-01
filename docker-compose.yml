@@ -1,0 +1,72 @@
+version: "3.3"
+
+# https://support.atlassian.com/bitbucket-cloud/docs/yaml-anchors/
+# https://www.howtogeek.com/devops/how-to-simplify-docker-compose-files-with-yaml-anchors-and-extensions/
+x-common: &common
+    image: ${DOCKER_IMAGE_NAME:-schedulit-backend-image}
+    build: .
+    pull_policy: never
+    environment:
+      - DATABASE_URL
+      - ENVIRONMENT
+      - SECRET_KEY
+      - DEBUG=${DEBUG:-false}
+      - REDIS_HOST
+      - REDIS_PORT
+      - ENABLE_VERBOSE_API_LOGS
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      pipenv_check:
+        condition: service_completed_successfully
+
+services:
+  backend:
+    <<: *common
+    container_name: backend-container
+    command: gunicorn --bind 0.0.0.0:8080 schedulit.wsgi:application --workers=4
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      collectstatic:
+        condition: service_completed_successfully
+    restart: "on-failure"
+    expose:  # this is only for internal use, so nginx can see it
+      - 8080
+    networks:
+      - django-network
+
+  migration:
+    <<: *common
+    command: python manage.py migrate --noinput
+  collectstatic:
+    <<: *common
+    command: python manage.py collectstatic --noinput
+  pipenv_check:
+    <<: *common
+    depends_on: []
+    command: pipenv verify
+
+  nginx:
+    build: nginx
+    restart: always
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - ${PORT:-8000}:8000
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    name: django-network
+
+volumes:
+  media_volume:
+  static_volume:
