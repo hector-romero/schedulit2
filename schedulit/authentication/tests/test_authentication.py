@@ -13,9 +13,6 @@ same_email = [
 
 
 class AuthenticationCreateUserTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        pass
 
     @staticmethod
     def create_user(email: str, role: User.Roles = None, employee_id: str = None):
