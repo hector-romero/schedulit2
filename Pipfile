@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
+django = "*"  # for this project, I don't mind using django 5. For anything important, I would go for LTS 4.2
 django-environ = "*"
 psycopg = "*"
 gunicorn = "*"
