@@ -53,3 +53,15 @@ class User(AbstractBaseUser, PermissionsMixin):
             UniqueConstraint('employee_id', condition=Q(employee_id__gt=''), name='unique_employee_id',
                              violation_error_message=_('Employee ID already in use.'))
         ]
+
+    def _is_role(self, role: Roles) -> bool:
+        return self.role == role.value
+
+    @property
+    def is_employee(self) -> bool:
+        # Assuming employee role is the default (in case there's no role in the user for some reason)
+        return not self.role or self._is_role(User.Roles.EMPLOYEE)
+
+    @property
+    def is_scheduler(self) -> bool:
+        return self._is_role(User.Roles.SCHEDULER)

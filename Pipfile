@@ -8,6 +8,10 @@ django = "*"  # for this project, I don't mind using django 5. For anything impo
 django-environ = "*"
 psycopg = "*"
 gunicorn = "*"
+django-rest-framework = "*"
+django-rest-knox = "*"
+install = "*"
+drf-exceptions-hog = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -15,6 +19,7 @@ pylint-django = "*"
 pylint = "*"
 mypy = "*"
 django-stubs = {extras = ["compatible-mypy"], version = "*"}
+djangorestframework-stubs = {extras = ["compatible-mypy"], version = "*"}
 
 [requires]
 python_version = "3.11"

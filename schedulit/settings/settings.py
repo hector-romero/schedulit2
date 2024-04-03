@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'knox',
 
     'schedulit.authentication',
     'schedulit.shift',
 ]
 
 MIDDLEWARE = [
+    'schedulit.api.middleware.APIMiddleWare',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -127,3 +130,24 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'authentication.User'
+
+
+# For knox tokens
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(days=2),
+    'AUTO_REFRESH': True,
+    'MIN_REFRESH_INTERVAL': 60,
+    'USER_SERIALIZER': 'schedulit.api.auth.serializers.UserSerializer'
+}
+
+REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY': 'detail',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
+    ],
+    "EXCEPTION_HANDLER": "exceptions_hog.exception_handler",
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
