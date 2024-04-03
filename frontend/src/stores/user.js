@@ -13,6 +13,14 @@ export const useUserStore = defineStore("user", {
             return state.token && state.user;
         },
 
+        isEmployee(state) {
+            return state.isLoggedIn && state.user.is_employee;
+        },
+
+        isScheduler(state) {
+            return state.isLoggedIn && state.user.is_scheduler;
+        },
+
         userName(state) {
             if (state.user) {
                 return state.user.name || state.user.email;

@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex justify-content-center" v-if="messagingStore.loaderActive">
-    <div class="spinner-border" role="status">
+  <div class="d-flex justify-content-center loading" v-if="messagingStore.loaderActive">
+    <div class="spinner-border spinner" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
@@ -37,3 +37,21 @@ watch(
     }
 );
 </script>
+
+<style>
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(30, 30, 30, .2);
+}
+.spinner {
+  position: absolute;
+  top: 50%;
+  text-align: center;
+}
+</style>

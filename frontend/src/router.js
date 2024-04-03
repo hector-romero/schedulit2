@@ -1,14 +1,21 @@
 import {createWebHistory, createRouter} from 'vue-router'
 
-import HomeView from './components/Home.vue'
-import LoginView from './components/auth/Login.vue'
-import RegisterView from './components/auth/Register.vue'
+import LoginView from '@/components/auth/Login.vue'
+import RegisterView from '@/components/auth/Register.vue'
+import UserView from '@/components/scheduler/User.vue';
 import {useUserStore} from "@/stores/user.js";
 
 const LOGIN_PATH = '/login';
 const HOME_PATH = '/';
+
 const routes = [
-    {path: HOME_PATH, component: HomeView},
+    {path: HOME_PATH, component: () => {
+        if (useUserStore().isScheduler) {
+            return import('@/components/scheduler/Users.vue')
+        }
+        return import('@/components/Home.vue')
+    }},
+    {path: '/user/:userId', name: 'UserDetails', component: UserView, props: true},
     {path: LOGIN_PATH, component: LoginView, meta: {requiresNoLoggedIn: true}},
     {path: '/register', component: RegisterView, meta: {requiresNoLoggedIn: true}},
     {path: '/:pathMatch(.*)*', redirect: HOME_PATH}
