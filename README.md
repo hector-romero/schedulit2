@@ -10,13 +10,15 @@
 
 ### Install pipenv
 
+```sh
     pip install pipenv
-
+```
 
 ### Install requirements:
-    
-    pipenv install -d
 
+```sh    
+    pipenv install -d
+```
 
 ## Docker:
 
@@ -32,16 +34,21 @@ to access those services is replacing `localhost` by `host.docker.internal`.
 
 ### Execute server with docker:
 
+```sh
     docker-compose up --build
-
+```
 
 ## Linters / Inspections
 
 Code analysis tools are setup to ensure better code quality.
 
+```sh
     flake8
     pylint schedulit
+```
 
 Code typing anotations are checked using mypy
 
+```sh
     mypy schedulit
+```

@@ -1,47 +1,55 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div>
+    <!-- Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <router-link to="/" class="navbar-brand">Schedulit</router-link>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item" v-if="!userStore.user">
+              <router-link to="/login" class="nav-link">Login</router-link>
+            </li>
+            <li class="nav-item" v-if="userStore.user">
+              <button @click="logout" class="btn btn-link nav-link">Logout</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <Alert></Alert>
+    <!-- Main Content Area -->
+    <router-view ></router-view>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import {useUserStore} from "@/stores/user";
+import {logout} from "@/services/auth";
+import {goToLogin} from "@/router";
+import Alert from "@/components/Alert.vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default {
+  components: {Alert},
+  setup() {
+    const userStore = useUserStore();
+    return {userStore};
+  },
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+  methods: {
+    logout() {
+      logout().then(() => {
+        return goToLogin();
+      });
+    }
   }
+};
+</script>
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+<style>
+/* Add custom styles here */
 </style>
