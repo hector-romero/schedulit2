@@ -6,6 +6,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
+class IsEmployeeAuthenticated(IsAuthenticated):
+    def has_permission(self, request, view: APIView) -> bool:
+        is_authenticated = super().has_permission(request, view)
+        # noinspection PyUnresolvedReferences
+        return bool(is_authenticated and request.user.is_employee)
+
+
+class IsSchedulerAuthenticated(IsAuthenticated):
+    def has_permission(self, request, view):
+        is_authenticated = super().has_permission(request, view)
+        # noinspection PyUnresolvedReferences
+        return bool(is_authenticated and request.user.is_scheduler)
+
+
 class BaseApiView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser]
@@ -27,3 +41,11 @@ class BaseApiView(APIView):
 
     def error_response(self, data: dict, message: str = None, headers: dict = None) -> Response:
         return self._response(data=data, message=message, headers=headers, status_code=self.error_response_status_code)
+
+
+class BaseSchedulerView(APIView):
+    permission_classes = [IsSchedulerAuthenticated]
+
+
+class BaseEmployeeView(APIView):
+    permission_classes = [IsEmployeeAuthenticated]

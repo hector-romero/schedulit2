@@ -15,7 +15,7 @@ class Shift(TimestampedModel):
 
     start_time = models.DateTimeField(_('Start time'), null=False, blank=False)
     end_time = models.DateTimeField(_('End time'), null=False, blank=False)
-    employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+', null=False)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shifts', null=False)
     status = Statuses.model_field(_('Status'), default=Statuses.CREATED)
 
     def __str__(self):
@@ -30,7 +30,7 @@ class Shift(TimestampedModel):
 
 class ShiftNote(TimestampedModel):
     note = models.CharField(_('Note'), max_length=50, blank=False, null=False)
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='+', null=False)
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='notes', null=False)
 
     def __str__(self) -> str:
         return self.note
