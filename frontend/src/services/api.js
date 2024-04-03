@@ -10,7 +10,7 @@ const http = axios.create({
 });
 
 http.interceptors.request.use((config) => {
-    messagingStore.activateLoader();
+    useMessagingStore().activateLoader();
     const token = useUserStore().token;
     if (token) {
         config.headers['Authorization'] = 'Token ' + token;
@@ -20,19 +20,28 @@ http.interceptors.request.use((config) => {
 
 
 http.interceptors.response.use(
-    (res) => {
-        if (res.data.message) {
-            messagingStore.setSuccessMessage(res.data.message);
+    (response) => {
+        console.log("API RESPONSE", response);
+        const messagingStore = useMessagingStore();
+        if (response.data.message) {
+            messagingStore.setSuccessMessage(response.data.message);
         }
         messagingStore.deactivateLoader();
-        return Promise.resolve(res.data);
+        return Promise.resolve(response.data);
     },
-    (err) => {
-        if (err.message || err.data.message) {
-            messagingStore.setErrorMessage(err.message || err.data.message);
+    (error) => {
+        console.log("API ERROR", error, error.response.data);
+        const messagingStore = useMessagingStore();
+        let message;
+        if (error.response) {
+            message = error.response.message || error.response.data
+        }
+        if (message || error.message) {
+            messagingStore.setErrorMessage(message || error.message);
         }
         messagingStore.deactivateLoader();
-        return Promise.reject(err);
+
+        return Promise.reject(error);
     }
 );
 

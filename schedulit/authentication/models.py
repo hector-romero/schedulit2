@@ -44,11 +44,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     class Meta:
+        # noinspection PyArgumentList
         constraints = [
             # Makes sure that email uniqueness is case-insensitive
             UniqueConstraint(Lower('email'), name='unique_email',
-                             violation_error_message=_('User email address already in use.')),
+                             violation_error_message=_('user with this email address already exists.')),
             # Employee id is not required (can be an empty string), but makes sure that, when defined, it's unique
-            UniqueConstraint(fields=['employee_id'], condition=Q(employee_id__gt=''), name='unique_employee_id',
+            UniqueConstraint('employee_id', condition=Q(employee_id__gt=''), name='unique_employee_id',
                              violation_error_message=_('Employee ID already in use.'))
         ]

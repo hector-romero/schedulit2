@@ -8,9 +8,9 @@ if TYPE_CHECKING:
 
 
 class UserManager(DjangoUserManager['User']):
-    def _create_user(self, email: str = None, name: str = None, password: str = None,
-                     employee_id: str = None, role: 'User.Roles' = None,
-                     is_staff: bool = False, is_superuser: bool = False) -> 'User':
+    def construct_user(self, email: str = None, name: str = None, password: str = None,
+                       employee_id: str = None, role: 'User.Roles' = None,
+                       is_staff: bool = False, is_superuser: bool = False) -> 'User':
         user = self.model(
             email=self.normalize_email(email),
             name=str(name or '').strip(),
@@ -28,8 +28,8 @@ class UserManager(DjangoUserManager['User']):
         """
         Creates and saves a User with the given email, phone and password.
         """
-        user = self._create_user(email=email, name=name, password=password,
-                                 employee_id=employee_id, role=role, is_staff=is_staff, is_superuser=is_superuser)
+        user = self.construct_user(email=email, name=name, password=password,
+                                   employee_id=employee_id, role=role, is_staff=is_staff, is_superuser=is_superuser)
         user.full_clean()
         user.save(using=self._db)
         return user

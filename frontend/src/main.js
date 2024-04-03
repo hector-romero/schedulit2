@@ -10,11 +10,9 @@ import {checkLogin} from "@/services/auth";
 
 const pinia = createPinia();
 
-const app = createApp(App).use(pinia);
+const app = createApp(App)
+    .use(pinia);
 
 await checkLogin();
 
-import {useMessagingStore} from "@/stores/messaging.js";
-
-window.messagingStore = useMessagingStore();
 app.use(router).mount('#app');
