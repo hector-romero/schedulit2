@@ -1,5 +1,11 @@
 # Schedulit
 
+URLS:
+
+http://schedulit.hecrom.com
+
+http://schedulit-be.hecrom.com/admin/
+
 ## Dependencies and project setup:
 
     python 3.11
