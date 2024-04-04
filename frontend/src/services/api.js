@@ -2,8 +2,10 @@ import axios from "axios";
 import {useUserStore} from "@/stores/user.js";
 import {useMessagingStore} from "@/stores/messaging.js";
 
+const apiurl = import.meta.env.VITE_API_URL;
+console.log("API URL", apiurl)
 const http = axios.create({
-    baseURL: "http://192.168.1.55:8000/api",
+    baseURL: apiurl,
     headers: {
         Accept: "application/json",
     },
