@@ -26,6 +26,10 @@ https://codeburst.io/how-to-build-a-rails-app-on-top-of-an-existing-database-baa
     rails generate scaffold Shift timestamp:timestamptz start_time:timestamptz end_time:timestamptz status:string employee:references --no-migration
 ```
 
+```
+    rails generate scaffold ShiftNote timestamp:timestamptz note:string shift:references --no-migration
+```
+
 
 
 # README
