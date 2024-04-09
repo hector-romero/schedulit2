@@ -11,13 +11,11 @@ DEFAULTS: &DEFAULTS
 
 one:
   <<: *DEFAULTS
-  id: 1
   email: one@email.com
   employee_id: one
   name: one
 two:
   <<: *DEFAULTS
-  id: 2
   email: two@email.com
   employee_id: two
   name: two

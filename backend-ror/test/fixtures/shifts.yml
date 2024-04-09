@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start_time: <%= Time.now %>
+  end_time: <%= Time.now %>
+  status: creared
+  employee: one
+
+two:
+  start_time: <%= Time.now %>
+  end_time: <%= Time.now %>
+  status: created
+  employee: two
