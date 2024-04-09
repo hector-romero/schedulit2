@@ -14,6 +14,13 @@ rails new . --api --skip-keeps --skip-action-mailer --skip-action-mailbox --data
 ```
 
 
+# Importing models from django db
+https://codeburst.io/how-to-build-a-rails-app-on-top-of-an-existing-database-baa3fe6384a0
+
+```
+    rails generate scaffold User password:string last_login:timestamptz is_superuser:boolean email:string is_staff:boolean is_active:boolean date_joined:timestamptz employee_id:string name:string role:string --no-migration
+```
+
 
 
 # README

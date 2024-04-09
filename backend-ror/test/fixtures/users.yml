@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+DEFAULTS: &DEFAULTS
+  password: password
+  last_login: <%= Time.now %>
+  # date_joined:
+  is_superuser: false
+  is_staff: false
+  is_active: false
+  employee_id: MyString
+  role: employee
+
+one:
+  <<: *DEFAULTS
+  id: 1
+  email: one@email.com
+  employee_id: one
+  name: one
+two:
+  <<: *DEFAULTS
+  id: 2
+  email: two@email.com
+  employee_id: two
+  name: two
