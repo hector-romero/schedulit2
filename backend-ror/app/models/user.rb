@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  # has_many :authtokens, foreign_key: 'user_id', class_name: 'Authtoken'
+
   self.table_name = 'authentication_user'
 
   # before_create :set_date_joined

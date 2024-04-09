@@ -30,6 +30,10 @@ https://codeburst.io/how-to-build-a-rails-app-on-top-of-an-existing-database-baa
     rails generate scaffold ShiftNote timestamp:timestamptz note:string shift:references --no-migration
 ```
 
+```
+    rails generate scaffold AuthToken created:timestamptz user:references expiry:timestamptz token_key:string --no-migration --primary-key-type=string
+```
+
 
 
 # README
