@@ -1,5 +1,11 @@
 class User < ApplicationRecord
-  # has_many :authtokens, foreign_key: 'user_id', class_name: 'Authtoken'
+  attribute :is_superuser, :boolean, default: false
+  attribute :is_staff, :boolean, default: false
+  attribute :is_active, :boolean, default: true
+  attribute :employee_id, :string, default: ''
+  attribute :name, :string, default: ''
+  # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Enum.html
+  enum :role, {scheduler: 'scheduler', employee: 'employee'}, default: :scheduler
 
   self.table_name = 'authentication_user'
 
@@ -10,6 +16,21 @@ class User < ApplicationRecord
   # def set_date_joined
   #   self.date_joined = DateTime.now
   # end
+  def password
+    self[:password]
+  end
+
+  def password=(raw_password)
+    self[:password] = Pbkdf2PasswordHasher.encode(raw_password)
+  end
+
+  def check_password(raw_password)
+    """
+        Return a boolean of whether the raw_password was correct
+    """
+    Pbkdf2PasswordHasher.verify(raw_password, self[:password])
+  end
+
   class << self
     private
 
