@@ -31,4 +31,9 @@ module KnoxToken
     '''
     token[0..KnoxToken::TOKEN_KEY_LENGTH - 1]
   end
+
+  def self.compare_digest(token, digest)
+    token_digest = self.hash_token(token)
+    return token_digest == digest
+  end
 end

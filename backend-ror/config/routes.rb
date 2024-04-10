@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  namespace :api do
+    resources :account
+
+  end
+  # TODO remove
   resources :auth_tokens
   resources :shift_notes
   resources :shifts

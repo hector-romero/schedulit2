@@ -9,15 +9,16 @@ class User < ApplicationRecord
 
   self.table_name = 'authentication_user'
 
-  # before_create :set_date_joined
-  # before_save :set_date_joined
-  #
-  # # private
-  # def set_date_joined
-  #   self.date_joined = DateTime.now
-  # end
   def password
     self[:password]
+  end
+
+  def is_scheduler
+    self[:role] == :scheduler
+  end
+
+  def is_employee
+    self[:role] == :employee
   end
 
   def password=(raw_password)
@@ -29,6 +30,12 @@ class User < ApplicationRecord
         Return a boolean of whether the raw_password was correct
     """
     Pbkdf2PasswordHasher.verify(raw_password, self[:password])
+  end
+
+  def as_json(options = nil)
+    # This is probably better handled by a serializer, but this is simpler
+    # https://github.com/rails-api/active_model_serializers?
+    super(only: [:id, :email, :name, :employee_id, :last_login], methods: [:is_scheduler, :is_employee])
   end
 
   class << self
