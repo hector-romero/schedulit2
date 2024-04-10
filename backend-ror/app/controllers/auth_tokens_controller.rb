@@ -16,7 +16,6 @@ class AuthTokensController < ApplicationController
   # POST /auth_tokens
   def create
     @auth_token = AuthToken.new(auth_token_params)
-    @auth_token.digest = SecureRandom.uuid.to_s
     if @auth_token.save
       render json: @auth_token, status: :created, location: @auth_token
     else

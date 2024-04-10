@@ -41,3 +41,5 @@ end
 
 
 gem "schema_to_scaffold", "~> 0.8.2", :group => :development
+
+gem "binascii", "~> 1.0"

@@ -1,5 +1,7 @@
 require 'openssl'
 require "base64"
+require 'securerandom'
+
 
 # Since I want to use the same database used for the django application, I will implement the same password hashing
 # algorithm for authentication in rails that is used as default for django (PBKDF2):
