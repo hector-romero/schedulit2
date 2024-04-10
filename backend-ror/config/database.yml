@@ -21,8 +21,8 @@ default: &default
 
 development:
   <<: *default
-  database: schedulit_ror_test
-#  database: schedulit
+#  database: schedulit_ror_test
+  database: schedulit
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

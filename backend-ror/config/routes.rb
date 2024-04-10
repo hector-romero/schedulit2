@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :account
+    scope :account, controller: :account do
+      get '', action: 'index'
+      post 'login', action: 'login'
+    end
 
   end
   # TODO remove

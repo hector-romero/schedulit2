@@ -1,13 +1,36 @@
+require 'active_support/rescuable'
+
 ApiError = Struct.new(:type, :code, :detail, :attr)
 
-API_ERRORS = {
-  invalid_token: ApiError.new('authentication_error', 'authentication_failed', 'Invalid token.')
-}
-
 class Api::ApiController < ApplicationController
+  include ActiveSupport::Rescuable
   include ActionController::HttpAuthentication::Token::ControllerMethods
 
+  rescue_from Exception, with: :handle_unexpected_error
+  rescue_from ActionController::ParameterMissing, with: :handle_missing_parameter_error
+  rescue_from ActionDispatch::Http::Parameters::ParseError, with: :handle_invalid_request_error
+
   before_action :authenticate_user
+
+  def handle_missing_parameter_error(error)
+    error_response(ApiError.new('validation_error', 'required', 'This field is required.', error.param))
+  end
+
+  def handle_unexpected_error(error)
+    error_response(ApiError.new('unexpected_error', 'error', error.message))
+  end
+
+  def handle_invalid_request_error
+    error_response(ApiError.new("invalid_request", "parse_error",  "JSON parse error"))
+  end
+
+  def handle_bad_authentication
+    error_response(ApiError.new('authentication_error', 'authentication_failed', 'Invalid token.'),)
+  end
+
+  def validation_error(detail, code)
+    error_response(ApiError.new('validation_error', code, detail))
+  end
 
   def success_response(data)
     render json: data, status: :ok
@@ -19,11 +42,6 @@ class Api::ApiController < ApplicationController
 
   def authenticate_user
     authenticate_user_with_token || handle_bad_authentication
-  end
-
-
-  def handle_bad_authentication
-    error_response(API_ERRORS[:invalid_token])
   end
 
   # sets @current_user if the request is authenticated

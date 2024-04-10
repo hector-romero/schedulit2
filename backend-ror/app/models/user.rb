@@ -5,7 +5,7 @@ class User < ApplicationRecord
   attribute :employee_id, :string, default: ''
   attribute :name, :string, default: ''
   # https://edgeapi.rubyonrails.org/classes/ActiveRecord/Enum.html
-  enum :role, {scheduler: 'scheduler', employee: 'employee'}, default: :scheduler
+  enum :role, {scheduler: 'scheduler', employee: 'employee'}, default: :employee
 
   self.table_name = 'authentication_user'
 
@@ -14,11 +14,11 @@ class User < ApplicationRecord
   end
 
   def is_scheduler
-    self[:role] == :scheduler
+    self.scheduler?
   end
 
   def is_employee
-    self[:role] == :employee
+    self.employee?
   end
 
   def password=(raw_password)

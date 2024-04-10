@@ -1,6 +1,22 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
+
+  test 'should return correct role value' do
+    user = User.create(password: "password", email: "scheduler@email.com", role: :scheduler)
+    assert user.is_scheduler
+    assert_not user.is_employee
+
+    user = User.create(password: "password", email: "employee@email.com", role: :employee)
+    assert user.is_employee
+    assert_not user.is_scheduler
+
+    # User creation shuold default role to employee
+    user = User.create(password: "password", email: "employee_default@email.com")
+    assert user.is_employee
+    assert_not user.is_scheduler
+  end
+
   test "should set hashed user password" do
     user = User.create(password: "password", email: "testemail@email.com")
     user = User.find(user.id)  # is this needed?
