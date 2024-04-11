@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       get '', action: 'index'
       post 'login', action: 'login'
       post 'register', action: 'register'
+      post 'logout', action: 'logout'
+      post 'logout/all', action: 'logout_all'
     end
 
     # Catch all for not defined paths

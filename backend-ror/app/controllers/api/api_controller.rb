@@ -82,6 +82,7 @@ class Api::ApiController < ApplicationController
       end
       # TODO Check user role, token expiration
       @current_user = auth_token.user
+      @auth_token = auth_token
     end
   end
 end

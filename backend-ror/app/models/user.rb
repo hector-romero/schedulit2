@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :auth_tokens
+
   attribute :is_superuser, :boolean, default: false
   attribute :is_staff, :boolean, default: false
   attribute :is_active, :boolean, default: true

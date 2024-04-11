@@ -2,10 +2,6 @@ class Api::AccountController < Api::ApiController
 
   skip_before_action :authenticate_user, only: %i[ login register]
 
-  def unauthenticated
-    @current_user = nil
-  end
-
   def index
     success_response({'user': @current_user})
   end
@@ -32,6 +28,16 @@ class Api::AccountController < Api::ApiController
     if @current_user
       create_token_for_current_user
     end
+  end
+
+  def logout
+    @auth_token.destroy!
+    success_response({'message': 'Logged out successfully.'})
+  end
+
+  def logout_all
+    @current_user.auth_tokens.destroy_all
+    success_response({'message': 'Logged out successfully.'})
   end
 
   def register_user_params
