@@ -3,8 +3,11 @@ Rails.application.routes.draw do
     scope :account, controller: :account do
       get '', action: 'index'
       post 'login', action: 'login'
+      post 'register', action: 'register'
     end
 
+    # Catch all for not defined paths
+    match '*path', to: "api#handle_404_error", via: :all
   end
   # TODO remove
   resources :auth_tokens
