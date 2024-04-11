@@ -19,6 +19,5 @@ class ShiftView(ModelViewSet, BaseSchedulerView):
         return queryset
 
     def create(self, request: Request, *args: typing.Any, **kwargs: typing.Any) -> Response:
-        request.data['employee_id'] = kwargs['employee_id']
         request.data['employee'] = kwargs['employee_id']
         return super().create(request, *args, **kwargs)
