@@ -21,8 +21,6 @@ Rails.application.routes.draw do
     # Catch all for not defined paths
     match '*path', to: "api#handle_404_error", via: :all
   end
-  # TODO remove
-  resources :auth_tokens
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
