@@ -3,7 +3,7 @@ version: "3.3"
 # https://support.atlassian.com/bitbucket-cloud/docs/yaml-anchors/
 # https://www.howtogeek.com/devops/how-to-simplify-docker-compose-files-with-yaml-anchors-and-extensions/
 x-common: &common
-    image: ${DOCKER_IMAGE_NAME:-schedulit-backend-image}
+    image: ${DOCKER_IMAGE_NAME:-schedulit-backend-django-image}
     build: .
     pull_policy: never
     environment:
@@ -13,7 +13,6 @@ x-common: &common
       - DEBUG=${DEBUG:-false}
       - REDIS_HOST
       - REDIS_PORT
-      - ENABLE_VERBOSE_API_LOGS
     volumes:
       - .:/app
       - static_volume:/app/static
@@ -23,9 +22,9 @@ x-common: &common
         condition: service_completed_successfully
 
 services:
-  backend:
+  backend_django:
     <<: *common
-    container_name: backend-container
+    container_name: backend-django-container
     command: gunicorn --bind 0.0.0.0:8080 schedulit.wsgi:application --workers=4
     depends_on:
       migration:
@@ -36,8 +35,7 @@ services:
     expose:  # this is only for internal use, so nginx can see it
       - 8080
     networks:
-      - django-network
-
+      - app-network
   migration:
     <<: *common
     command: python manage.py migrate --noinput
@@ -52,6 +50,8 @@ services:
   frontend:
     environment:
       - VITE_API_URL
+      - VITE_API_URL_DJANGO
+      - VITE_API_URL_RAILS
     command: npm run build
     build:
       context: ./frontend
@@ -59,7 +59,21 @@ services:
     volumes:
       - frontend_volume:/app/dist/
     networks:
-      - django-network
+      - app-network
+
+  backend_rails:
+    environment:
+      - DATABASE_URL
+      - SECRET_KEY
+    build:
+      context: ./backend-ror
+      dockerfile: Dockerfile
+
+    command: ./bin/rails server -p 3000
+    expose:  # this is only for internal use, so nginx can see it
+      - 3000
+    networks:
+      - app-network
 
   nginx:
     build: nginx
@@ -69,19 +83,22 @@ services:
       - media_volume:/app/media
       - frontend_volume:/frontend
     ports:
-      - ${PORT:-8000}:8000
-      - '8001:8001'
+      - ${PORT_DJANGO:-8000}:8000
+      - ${PORT_FRONTEND:-8001}:8001
+      - ${PORT_RAILS:-8002}:8002
     depends_on:
       frontend:
         condition: service_completed_successfully
-      backend:
+      backend_django:
+        condition: service_started
+      backend_rails:
         condition: service_started
     networks:
-      - django-network
+      - app-network
 
 networks:
-  django-network:
-    name: django-network
+  app-network:
+    name: app-network
 
 volumes:
   media_volume:

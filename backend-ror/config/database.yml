@@ -18,11 +18,11 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: <%= ENV.fetch("DATABASE_URL") %>
 
 development:
   <<: *default
 #  database: schedulit_ror_test
-  database: schedulit
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -80,6 +80,3 @@ test:
 #
 production:
   <<: *default
-  database: backend_ror_production
-  username: backend_ror
-  password: <%= ENV["BACKEND_ROR_DATABASE_PASSWORD"] %>

@@ -1,13 +1,12 @@
-# This file is alternative to active.py (although you can import it from there)
-# The idea is to provide a way to import settings from the environment variables
-# rather than having them hardcoded in active.py. This can allow easy setup of
-# environments for docker launching
+# Import settings from the environment variables
+
 from enum import Enum
+from pathlib import Path
 
 import environ
 
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(Path(__file__).resolve().parent.parent.parent / '.env')
 
 
 class Environments(Enum):

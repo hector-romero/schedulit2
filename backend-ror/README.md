@@ -35,6 +35,17 @@ https://codeburst.io/how-to-build-a-rails-app-on-top-of-an-existing-database-baa
 ```
 
 
+## Issues:
+
+### Openssl issue with Ruby 3.0.6 in OSX
+Error:
+
+    Could not load OpenSSL.
+    You must recompile Ruby with OpenSSL support or change the sources in your Gemfile from 'https' to 'http'. Instructions for
+    compiling with OpenSSL using RVM are available at rvm.io/packages/openssl.
+
+Solution: Just use ruby 3.0.0
+
 
 # README
 
