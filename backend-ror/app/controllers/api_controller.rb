@@ -1,13 +1,13 @@
 require 'active_support/rescuable'
-require "pg"
 
 ApiError = Struct.new(:type, :code, :detail, :attr)
 
-class Api::ApiController < ApplicationController
+class ApiController < ApplicationController
   include ActiveSupport::Rescuable
   include ActionController::HttpAuthentication::Token::ControllerMethods
 
   rescue_from Exception, with: :handle_unexpected_error
+  rescue_from ActiveRecord::RecordNotFound, with: :handle_404_error
   rescue_from ActiveRecord::RecordNotUnique, with: :handle_duplicated_key_error
   rescue_from ActionController::ParameterMissing, with: :handle_missing_parameter_error
   rescue_from ActionDispatch::Http::Parameters::ParseError, with: :handle_invalid_request_error
@@ -19,8 +19,14 @@ class Api::ApiController < ApplicationController
     message = 'Unexpected error'
     key = nil
     if error.message.include? 'DETAIL:'
-      split_message = error.message.split('DETAIL:')[-1]
-      key = split_message.tr("\n", '').gsub(/.*Key \((.*)\)=.*/, '\1')
+      # For what I've seen the message looks like "... DETAIL: Key (key name) = (value) is already in use"
+      # So, I split the message to get everything between the "DETAIL" and the "="
+      split_message = error.message.split('DETAIL:')[-1].split('=')[0]
+      # Then, using the regexp, I get the part in between parentheses "( )"
+      # key = split_message.gsub(/.*\(([^)]+)\).*/i, '\1')
+      # Edit: Taking whatever text is after the "(" until the other closing ")" or ":", because some keys where of
+      # the form "(<key>::text)" rather than "(<key>)"
+      key = split_message.gsub(/.*\(([^:)]+).*/i, '\1')
       message = "#{key.humanize(keep_id_suffix: true)} is already in use"
     end
     error_response(ApiError.new('validation_error', 'unique', message, key))
@@ -45,11 +51,11 @@ class Api::ApiController < ApplicationController
   end
 
   def handle_invalid_request_error
-    error_response(ApiError.new("invalid_request", "parse_error",  "JSON parse error"))
+    error_response(ApiError.new("invalid_request", "parse_error",  "JSON parse error."))
   end
 
   def handle_404_error
-    error_response(ApiError.new('nout_found', 'not_found', 'Not found'), :not_found)
+    error_response(ApiError.new('invalid_request', 'not_found', 'Not found.'), :not_found)
   end
 
   def handle_bad_authentication

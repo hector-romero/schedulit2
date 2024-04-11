@@ -1,4 +1,4 @@
-class Api::AccountController < Api::ApiController
+class AccountController < ApiController
 
   skip_before_action :authenticate_user, only: %i[ login register]
 

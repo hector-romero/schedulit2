@@ -1,10 +1,9 @@
-class UsersController < ApplicationController
+class UsersController < ApiController
   before_action :set_user, only: %i[ show update destroy ]
 
   # GET /users
   def index
     @users = User.all
-
     render json: @users
   end
 
@@ -16,7 +15,6 @@ class UsersController < ApplicationController
   # POST /users
   def create
     @user = User.new(user_params)
-
     if @user.save
       render json: @user, status: :created, location: @user
     else
@@ -26,7 +24,7 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    if @user.update(user_params)
+    if @user.update(user_params(true))
       render json: @user
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -45,7 +43,8 @@ class UsersController < ApplicationController
     end
 
     # Only allow a list of trusted parameters through.
-    def user_params
-      params.require(:user).permit(:password, :last_login, :is_superuser, :email, :is_staff, :is_active, :date_joined, :employee_id, :name, :role)
+    def user_params(ignore_required= false)
+      params.require([:email, :password]) unless ignore_required
+      params.permit(:email, :name, :employee_id, :password, :role)
     end
 end

@@ -5,8 +5,7 @@ DEFAULTS: &DEFAULTS
   # date_joined:
   is_superuser: false
   is_staff: false
-  is_active: false
-  employee_id: MyString
+  is_active: true
   role: employee
 
 one:
