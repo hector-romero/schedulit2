@@ -4,8 +4,17 @@ require 'pbkdf2_password_hasher'
 
 class KnoxTokenTest < ActiveSupport::TestCase
 
-  test "should generate token" do
-    assert_not_nil KnoxToken.create_token_string
+  test "should generate a valid hex token" do
+    # this is not a sure way to check that the random result of create_token_string is always matches
+    # the expected criteria, but it's good enough
+    5.times do
+      token_string = KnoxToken.create_token_string
+      assert_not_nil token_string
+      assert_equal KnoxToken::AUTH_TOKEN_CHARACTER_LENGTH, token_string.length
+      # checks that the token is a valid HEX number
+      assert !token_string[/\H/]
+    end
+
   end
 
   test "should generate the correct hash_token" do

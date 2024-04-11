@@ -10,7 +10,7 @@ module KnoxToken
   TOKEN_KEY_LENGTH = 8
 
   def self.create_token_string
-      SecureRandom.alphanumeric(KnoxToken::AUTH_TOKEN_CHARACTER_LENGTH)
+      SecureRandom.hex(KnoxToken::AUTH_TOKEN_CHARACTER_LENGTH / 2)
   end
 
   def self.hash_token(token)

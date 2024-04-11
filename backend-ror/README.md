@@ -1,13 +1,13 @@
 # Schedulit
 
-For this backend, I though it was going to be interesting and simpler, from a data handling perspective, to share the
-same database used by the Django app. That would mean that every bit of information, user accounts, etc is going to 
+For this backend, I thought it was going to be interesting and simpler, from a data handling perspective, to share the
+same database used by the Django app. That would mean that every bit of information, user accounts, etc., is going to 
 be the same in both places, so I can switch backends freely in the frontend and still see the same data but provided by 
 either python or django.
 
-This decision forces me to veer a bit out of the standard way of handling objects and their conection with the database 
+This decision forces me to veer a bit out of the standard way of handling objects and their connection with the database 
 in Rails, but for the purposes of the demonstration of my ability of work with RoR and ruby, I consider it to be a
-good compromise.
+acceptable compromise.
 
 ```sh
 rails new . --api --skip-keeps --skip-action-mailer --skip-action-mailbox --database=postgresql --skip-action-text --skip-active-job  --skip-active-storage  --skip-action-cable  --skip-hotwire --skip-asset-pipeline --skip-javascript
