@@ -1,10 +1,9 @@
-class ShiftNotesController < ApplicationController
+class ShiftNotesController < ApiController
   before_action :set_shift_note, only: %i[ show update destroy ]
 
   # GET /shift_notes
   def index
-    @shift_notes = ShiftNote.all
-
+    @shift_notes = ShiftNote.where(shift_id: params['shift_id'])
     render json: @shift_notes
   end
 
@@ -15,22 +14,14 @@ class ShiftNotesController < ApplicationController
 
   # POST /shift_notes
   def create
-    @shift_note = ShiftNote.new(shift_note_params)
-
-    if @shift_note.save
-      render json: @shift_note, status: :created, location: @shift_note
-    else
-      render json: @shift_note.errors, status: :unprocessable_entity
-    end
+    @shift_note = ShiftNote.create!(shift_note_params)
+    render json: @shift_note, status: :created, location: @shift_note
   end
 
   # PATCH/PUT /shift_notes/1
   def update
-    if @shift_note.update(shift_note_params)
-      render json: @shift_note
-    else
-      render json: @shift_note.errors, status: :unprocessable_entity
-    end
+    @shift_note.update!(params.permit(:note))
+    render json: @shift_note
   end
 
   # DELETE /shift_notes/1
@@ -46,6 +37,7 @@ class ShiftNotesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def shift_note_params
-      params.require(:shift_note).permit(:timestamp, :note, :shift_id)
+      params.require([:note, :shift_id])
+      params.permit(:note, :shift_id)
     end
 end

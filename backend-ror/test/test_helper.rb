@@ -13,3 +13,16 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+
+module AuthenticatedTest
+  def headers
+    { 'Authorization': "Token #{@auth_token.token}" }
+  end
+
+  def setup_authentication
+    @user = users(:one)
+    @auth_token = AuthToken.create(user: @user)
+
+  end
+end

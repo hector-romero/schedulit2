@@ -1,15 +1,11 @@
 require "test_helper"
 
 class ShiftsControllerTest < ActionDispatch::IntegrationTest
-
-  def headers
-    { 'Authorization': "Token #{@auth_token.token}" }
-  end
+  include AuthenticatedTest
 
   setup do
     @shift = shifts(:one)
-    @user = users(:one)
-    @auth_token = AuthToken.create(user: @user)
+    setup_authentication
   end
 
   test "should get index" do

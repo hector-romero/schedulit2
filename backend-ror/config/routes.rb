@@ -12,14 +12,17 @@ Rails.application.routes.draw do
       resources :shifts, :only => [:index, :create]
     end
 
-    resources :shifts, :only => [:show, :update, :destroy]
+    resources :shifts, :only => [:show, :update, :destroy] do
+      resources :shift_notes, path: 'notes', :only => [:index, :create]
+    end
+
+    resources :shift_notes, :only => [:show, :update, :destroy]
 
     # Catch all for not defined paths
     match '*path', to: "api#handle_404_error", via: :all
   end
   # TODO remove
   resources :auth_tokens
-  resources :shift_notes
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
