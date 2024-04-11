@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             if not user.email and attrs.get('email') is None:
                 user.email = self.instance.email
             if not user.name and attrs.get('name') is None:
-                user.email = self.instance.name
+                user.name = self.instance.name
             if not user.role and attrs.get('role') is None:
                 user.role = self.instance.role
             if not user.employee_id and attrs.get('employee_id') is None:
