@@ -11,7 +11,8 @@ class ApiController < ApplicationController
   rescue_from ActiveRecord::RecordNotUnique, with: :handle_duplicated_key_error
   rescue_from ActionController::ParameterMissing, with: :handle_missing_parameter_error
   rescue_from ActionDispatch::Http::Parameters::ParseError, with: :handle_invalid_request_error
-  rescue_from ArgumentError, with: :handle_argument_error
+  rescue_from ArgumentError, with: :handle_invalid_input
+  rescue_from ActiveRecord::RecordInvalid, with: :handle_invalid_input
 
   before_action :authenticate_user
 
@@ -32,9 +33,9 @@ class ApiController < ApplicationController
     error_response(ApiError.new('validation_error', 'unique', message, key))
   end
 
-  def handle_argument_error(error)
+  def handle_invalid_input(error)
     key = nil
-    error_type = 'argument'
+    error_type = 'invalid_input'
     if error.message.include?('is not a valid')
       key = error.message.gsub(/.*not a valid (.*)/, '\1')
       error_type = 'invalid_choice'

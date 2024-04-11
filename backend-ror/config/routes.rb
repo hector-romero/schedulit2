@@ -8,14 +8,19 @@ Rails.application.routes.draw do
       post 'logout/all', action: 'logout_all'
     end
 
-    resources :users
+    resources :users do
+      resources :shifts, :only => [:index, :create]
+    end
+
+    resources :shifts, :only => [:show, :update, :destroy]
+
     # Catch all for not defined paths
     match '*path', to: "api#handle_404_error", via: :all
   end
   # TODO remove
   resources :auth_tokens
   resources :shift_notes
-  resources :shifts
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

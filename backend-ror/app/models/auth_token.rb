@@ -4,11 +4,12 @@ class AuthToken < ApplicationRecord
   self.primary_key = :digest
   self.table_name = 'knox_authtoken'
 
+  before_create :initialize_token
+
   def token
     @_token
   end
 
-  before_create :initialize_token
   private
 
   def initialize_token

@@ -1,10 +1,9 @@
-class ShiftsController < ApplicationController
+class ShiftsController < ApiController
   before_action :set_shift, only: %i[ show update destroy ]
 
   # GET /shifts
   def index
-    @shifts = Shift.all
-
+    @shifts = Shift.where(employee_id: params['user_id'])
     render json: @shifts
   end
 
@@ -15,22 +14,14 @@ class ShiftsController < ApplicationController
 
   # POST /shifts
   def create
-    @shift = Shift.new(shift_params)
-
-    if @shift.save
-      render json: @shift, status: :created, location: @shift
-    else
-      render json: @shift.errors, status: :unprocessable_entity
-    end
+    @shift = Shift.create!(new_shift_params)
+    render json: @shift, status: :created, location: @shift
   end
 
   # PATCH/PUT /shifts/1
   def update
-    if @shift.update(shift_params)
-      render json: @shift
-    else
-      render json: @shift.errors, status: :unprocessable_entity
-    end
+    @shift.update!(update_shift_params)
+    render json: @shift
   end
 
   # DELETE /shifts/1
@@ -45,7 +36,13 @@ class ShiftsController < ApplicationController
     end
 
     # Only allow a list of trusted parameters through.
-    def shift_params
-      params.require(:shift).permit(:timestamp, :start_time, :end_time, :status, :employee_id)
+    def new_shift_params
+      params['employee_id'] = params['user_id']
+      params.require([:employee_id, :start_time, :end_time])
+      params.permit(:start_time, :end_time, :employee_id)
+    end
+
+    def update_shift_params
+      params.permit(:start_time, :end_time, :status)
     end
 end

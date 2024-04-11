@@ -1,36 +1,43 @@
 require "test_helper"
 
 class ShiftsControllerTest < ActionDispatch::IntegrationTest
+
+  def headers
+    { 'Authorization': "Token #{@auth_token.token}" }
+  end
+
   setup do
     @shift = shifts(:one)
+    @user = users(:one)
+    @auth_token = AuthToken.create(user: @user)
   end
 
   test "should get index" do
-    get shifts_url, as: :json
+    get user_shifts_url(@shift.employee_id), as: :json, headers: headers
     assert_response :success
   end
 
   test "should create shift" do
     assert_difference("Shift.count") do
-      post shifts_url, params: { shift: { employee_id: @shift.employee_id, end_time: @shift.end_time, start_time: @shift.start_time, status: @shift.status, timestamp: @shift.timestamp } }, as: :json
+      post user_shifts_url(@shift.employee_id), params: { end_time: @shift.end_time, start_time: @shift.start_time}, as: :json, headers: headers
     end
 
     assert_response :created
   end
 
   test "should show shift" do
-    get shift_url(@shift), as: :json
+    get shift_url(@shift), as: :json, headers: headers
     assert_response :success
   end
 
   test "should update shift" do
-    patch shift_url(@shift), params: { shift: { employee_id: @shift.employee_id, end_time: @shift.end_time, start_time: @shift.start_time, status: @shift.status, timestamp: @shift.timestamp } }, as: :json
+    patch shift_url(@shift), params: { end_time: @shift.end_time, start_time: @shift.start_time, status: @shift.status }, as: :json, headers: headers
     assert_response :success
   end
 
   test "should destroy shift" do
     assert_difference("Shift.count", -1) do
-      delete shift_url(@shift), as: :json
+      delete shift_url(@shift.employee, @shift), as: :json, headers: headers
     end
 
     assert_response :no_content

@@ -2,12 +2,12 @@
 
 one:
   start_time: <%= Time.now %>
-  end_time: <%= Time.now %>
+  end_time: <%= Time.now + 5.hour%>
   status: creared
   employee: one
 
 two:
   start_time: <%= Time.now %>
-  end_time: <%= Time.now %>
+  end_time: <%= Time.now + 5.hour%>
   status: created
   employee: two
