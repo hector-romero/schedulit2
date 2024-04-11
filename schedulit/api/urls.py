@@ -18,7 +18,8 @@ urlpatterns = [
     path('users/', users_views.UsersView.as_view({'get': 'list', 'post': 'create'})),
     path('users/<int:pk>/', users_views.UsersView.as_view(
         {'get': 'retrieve', 'put': 'partial_update', 'patch': 'partial_update', 'delete': 'destroy'})),
-    path('users/<int:employee_id>/shifts/', shift_views.ShiftView.as_view({'get': 'list', 'post': 'create'}))
+    path('users/<int:employee_id>/shifts/', shift_views.ShiftView.as_view({'get': 'list', 'post': 'create'})),
 
-
+    path('shifts/<int:pk>/', shift_views.ShiftView.as_view(
+        {'get': 'retrieve', 'put': 'partial_update', 'patch': 'partial_update', 'delete': 'destroy'}))
 ]

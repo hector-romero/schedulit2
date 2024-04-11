@@ -1,10 +1,12 @@
 # Schedulit
 
-URLS:
+## URLS:
 
-http://schedulit.hecrom.com
+- Frontend: http://schedulit.hecrom.com
 
-http://schedulit-be.hecrom.com/admin/
+- Django Backend admin: http://schedulit-be.hecrom.com/admin/
+
+- Postman: https://www.postman.com/nods-realty/workspace/schedulit-api
 
 ## Dependencies and project setup:
 

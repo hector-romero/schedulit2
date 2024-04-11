@@ -11,9 +11,13 @@ class ShiftSerializer(serializers.ModelSerializer):
         end_time = attrs.get('end_time')
         # TODO Check overlapping with other shifts
         if not start_time or not end_time or start_time >= end_time:
-            raise serializers.ValidationError(_("Start time should be earlier than end time."))
+            raise serializers.ValidationError(_("End time should be greater than start time."))
         return attrs
 
     class Meta:
         model = Shift
-        fields = '__all__'
+        fields = ['id', 'timestamp', 'start_time', 'end_time', 'status', 'employee_id', 'employee']
+        extra_kwargs = {
+            'employee': {'required': True, 'write_only': True},
+            'timestamp': {'read_only': True}
+        }
