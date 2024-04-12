@@ -45,4 +45,7 @@ gem "schema_to_scaffold", "~> 0.8.2", :group => :development
 
 gem "binascii", "~> 1.0"
 
-gem 'dotenv-rails', groups: [:development, :test]
+# Dotenv can not be used in test environment at the moment, because it causes the tests to fail
+# https://github.com/bkeepers/dotenv/issues/500
+# gem 'dotenv-rails', groups: [:development, :test]
+gem 'dotenv-rails', groups: [:development]
