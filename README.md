@@ -2,9 +2,13 @@
 
 ## URLS:
 
-- Frontend: http://schedulit.hecrom.com
+- Frontend: https://schedulit.hecrom.com
 
-- Django Backend admin: http://schedulit-be.hecrom.com/admin/
+- Django Backend admin: https://schedulit-be.hecrom.com/admin/
+
+- Django Backend API: https://schedulit-be.hecrom.com/api/
+
+- Rails Backend API: https://schedulit-ror.hecrom.com/api/
 
 - Postman: https://www.postman.com/nods-realty/workspace/schedulit-api
 

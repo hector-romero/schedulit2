@@ -1,11 +1,11 @@
 import axios from "axios";
 import {useUserStore} from "@/stores/user.js";
 import {useMessagingStore} from "@/stores/messaging.js";
+import {useBackendStore} from "@/stores/backend.js";
 
-const apiurl = import.meta.env.VITE_API_URL;
-console.log("API URL", apiurl)
+
 const http = axios.create({
-    baseURL: apiurl,
+    baseURL: '',
     headers: {
         Accept: "application/json",
     },
@@ -17,6 +17,8 @@ http.interceptors.request.use((config) => {
     if (token) {
         config.headers['Authorization'] = 'Token ' + token;
     }
+    config.baseURL = useBackendStore().backendUrl;
+    console.log("API URL", config.baseURL);
     return config;
 });
 
