@@ -21,4 +21,7 @@ jobs:
       with:
         python-version: 3.11.6
     - name: Running django tests
-      run: pipenv run ./manage.py test
+      run: pipenv run coverage run
+    - name: Getting coverage report
+      # Use fail-under to trigger an error in the workflow: coverage report --fail-under 90
+      run: pipenv run coverage report

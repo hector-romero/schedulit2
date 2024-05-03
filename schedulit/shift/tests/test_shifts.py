@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.test import TestCase
 from django.utils import timezone
+from model_bakery import baker
 
 from schedulit.authentication.models import User
 from schedulit.shift.forms import ShiftForm, ShiftNoteForm
@@ -12,7 +13,7 @@ class ShiftTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.employee = User.objects.create_user(email='employee@mail.com', password='1234', role=User.Roles.EMPLOYEE)
+        cls.employee = baker.make(User, role=User.Roles.EMPLOYEE)
 
         now = datetime.now()
         now_minus_2hs = now - timedelta(hours=2)
@@ -38,7 +39,7 @@ class ShiftTest(TestCase):
         self.assertEquals(shift.start_time, self.now)
         self.assertEquals(shift.end_time, self.now_plus_2hs)
         self.assertEquals(shift.employee_id, self.employee.id)
-        # self.assertEquals(shift.status, Shift.Statuses.CREATED)
+        self.assertEquals(shift.status, Shift.Statuses.CREATED)
 
     def test_should_not_allow_creating_shift_with_invalid_start_time(self):
         self.assertRaises(ValueError, self.create_shift,
@@ -89,17 +90,7 @@ class ShiftTest(TestCase):
 class ShiftNoteTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        employee = User.objects.create_user(email='employee@mail.com', password='1234', role=User.Roles.EMPLOYEE)
-
-        now = datetime.now()
-        now_plus_2hs = now + timedelta(hours=2)
-
-        shift_form = ShiftForm(data={
-            'start_time': timezone.make_aware(now),
-            'end_time': timezone.make_aware(now_plus_2hs),
-            'employee': employee
-        })
-        cls.shift = shift_form.save()
+        cls.shift = baker.make(Shift)
 
     @staticmethod
     def create_shift_note(note: str | None, shift: Shift | None) -> ShiftNote:

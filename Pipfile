@@ -10,8 +10,9 @@ psycopg = "*"
 gunicorn = "*"
 django-rest-framework = "*"
 django-rest-knox = "*"
-install = "*"
 drf-exceptions-hog = "*"
+model-bakery = "*"
+coverage = "*"
 
 [dev-packages]
 flake8 = "*"
