@@ -5,7 +5,7 @@ from schedulit.api.utils import BaseSchedulerView
 from schedulit.authentication.models import User
 
 
-class UsersView(ModelViewSet, BaseSchedulerView):
+class UsersView(ModelViewSet[User], BaseSchedulerView):
     serializer_class = UserSerializer
 
     def get_queryset(self):

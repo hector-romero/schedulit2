@@ -10,6 +10,7 @@ from schedulit.api.auth.serializers import UserSerializer
 from schedulit.api.tests.helpers import ApiTestCase, RequestMethods
 
 from schedulit.authentication.models import User
+from schedulit.utils.tests.helpers import same_email_variations
 
 
 def get_register_params(email: str, password: str, name: str, role: User.Roles | str, employee_id: str) \
@@ -48,7 +49,7 @@ class LogoutTest(ApiTestCase):
         self.assertEqual(UserSerializer(instance=user).data, UserSerializer(instance=pre_user).data)
 
         # Checks that the assigned password is the expected
-        self.assertNotEquals(user.password, pre_user.password)
+        self.assertNotEqual(user.password, pre_user.password)
         self.assertTrue(user.check_password(pre_user.password))
 
         # The token should be linked to the user
@@ -56,19 +57,13 @@ class LogoutTest(ApiTestCase):
         self.assertEqual(user, user_from_token)
 
     def test_register_should_fail_to_register_user_with_duplicated_email(self):
-        same_email = [
-            'test@email.com',
-            'TEST@email.com',
-            'test@EMAIL.com',
-            'TEST@EMAIL.COM',
-        ]
-        pre_user = baker.prepare(User, email=same_email[0])
+        pre_user = baker.prepare(User, email=same_email_variations[0])
         params = get_register_params_for_user(pre_user)
 
         # First attempt should register ok
         self.assert_post(self.url_register, params, status.HTTP_200_OK)
 
-        for email in same_email:
+        for email in same_email_variations:
             params['email'] = email
             self.assert_post(self.url_register, params, status.HTTP_400_BAD_REQUEST)
 

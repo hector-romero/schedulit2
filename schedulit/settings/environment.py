@@ -1,5 +1,4 @@
 # Import settings from the environment variables
-
 from enum import Enum
 from pathlib import Path
 

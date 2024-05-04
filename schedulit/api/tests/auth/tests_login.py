@@ -8,6 +8,7 @@ from schedulit.api.auth.serializers import UserSerializer
 from schedulit.api.tests.helpers import ApiTestCase, RequestMethods
 
 from schedulit.authentication.models import User
+from schedulit.utils.tests.helpers import same_email_variations
 
 
 def get_login_params(username: str | None, password: str | None) -> dict[str, str | None]:
@@ -39,14 +40,8 @@ class LoginTest(ApiTestCase):
             self.assertEqual(response['user'], UserSerializer(instance=user).data)
 
     def test_login_should_be_case_insensitive_for_email(self):
-        same_email = [
-            'test@email.com',
-            'TEST@email.com',
-            'test@EMAIL.com',
-            'TEST@EMAIL.COM',
-        ]
-        user = baker.make(User, password=make_password('password'), email=same_email[0])
-        for email in same_email:
+        user = baker.make(User, password=make_password('password'), email=same_email_variations[0])
+        for email in same_email_variations:
             response = self.assert_post(self.url_login, get_login_params(email, 'password'),
                                         status.HTTP_200_OK)
             self.assertEqual(user.email, response['user']['email'])

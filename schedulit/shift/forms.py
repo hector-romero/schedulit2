@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from schedulit.shift.models import Shift, ShiftNote
 
 
-class ShiftForm(forms.ModelForm):
+class ShiftForm(forms.ModelForm[Shift]):
     def clean(self):
         super().clean()
         cleaned_data = self.cleaned_data
@@ -20,7 +20,7 @@ class ShiftForm(forms.ModelForm):
         model = Shift
 
 
-class ShiftNoteForm(forms.ModelForm):
+class ShiftNoteForm(forms.ModelForm[ShiftNote]):
     class Meta:
         fields = ['note', 'shift']
         model = ShiftNote

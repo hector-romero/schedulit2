@@ -24,7 +24,7 @@ class UtilsTest(TestCase):
         self.assertEqual(model_field.max_length,
                          max(len(SampleTestTextChoices.CHOICE1), len(SampleTestTextChoices.CHOICE2)))
         self.assertEqual(model_field.default, SampleTestTextChoices.CHOICE2)
-        self.assertEqual(model_field.choices, [(choice, value) for choice, value in SampleTestTextChoices.choices])
+        self.assertEqual(model_field.choices, list(SampleTestTextChoices.choices))
 
     def test_choices_should_return_correct_max_length(self):
         self.assertEqual(SampleTestTextChoices.max_length(),

@@ -9,17 +9,17 @@ class SettingsTest(TestCase):
     @staticmethod
     def test_should_load_dev():
         # noinspection PyUnresolvedReferences
-        import schedulit.settings.dev  # noqa: F401
+        import schedulit.settings.dev  # pylint: disable=import-outside-toplevel,unused-import # noqa: F401
         assert True
 
     @staticmethod
     def test_should_load_prod():
         # noinspection PyUnresolvedReferences
-        import schedulit.settings.prod  # noqa: F401
+        import schedulit.settings.prod  # pylint: disable=import-outside-toplevel,unused-import # noqa: F401
         assert True
 
     @staticmethod
     def test_should_load_test():
         # noinspection PyUnresolvedReferences
-        import schedulit.settings.test  # noqa: F401
+        import schedulit.settings.test  # pylint: disable=import-outside-toplevel,unused-import # noqa: F401
         assert True

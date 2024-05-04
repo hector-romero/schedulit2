@@ -2,14 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, Client
 
 from schedulit.authentication.models import User
-
-
-same_email = [
-    'test@email.com',
-    'TEST@email.com',
-    'test@EMAIL.com',
-    'TEST@EMAIL.COM',
-]
+from schedulit.utils.tests.helpers import same_email_variations
 
 
 class AuthenticationCreateUserTest(TestCase):
@@ -34,16 +27,16 @@ class AuthenticationCreateUserTest(TestCase):
         self.assertRaises(ValidationError, self.create_user, email='')
 
     def test_authentication_should_not_allow_creating_users_with_repeated_email(self):
-        self.assertIsNotNone(self.create_user(email=same_email[0]))
+        self.assertIsNotNone(self.create_user(email=same_email_variations[0]))
         # It shouldn't matter if the email has different usage of upper-lower cases
-        for email in same_email:
+        for email in same_email_variations:
             # self.assertRaises(IntegrityError, self.create_user, email=email, phone=None)
             self.assertRaises(ValidationError, self.create_user, email=email)
 
     def _test_employee_id(self, employee_id: str) -> None:
         user = self.create_user(email='test@email.com', employee_id=employee_id)
         self.assertIsNotNone(user)
-        self.assertEquals(user.employee_id, employee_id)
+        self.assertEqual(user.employee_id, employee_id)
 
     def test_authentication_should_allow_creating_users_with_employee_id(self):
         self._test_employee_id('someemployee_id')
@@ -61,7 +54,7 @@ class AuthenticationCreateUserTest(TestCase):
         for role in [User.Roles.EMPLOYEE, User.Roles.SCHEDULER]:
             user = self.create_user(email=role.value + "@email.com", role=role)
             self.assertIsNotNone(user)
-            self.assertEquals(user.role, role)
+            self.assertEqual(user.role, role)
 
     def test_authentication_should_allow_creating_staff_user(self):
         user = User.objects.create_user(email="staff@email.com", is_staff=True)
@@ -105,15 +98,15 @@ class AuthenticationLoginTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
-        cls.user = User.objects.create_user(email=same_email[0], password='password')
+        cls.user = User.objects.create_user(email=same_email_variations[0], password='password')
 
     def test_should_allow_to_login_using_email(self):
-        for email in same_email:
+        for email in same_email_variations:
             self.assertTrue(self.client.login(username=email, password='password'))
 
-        self.assertFalse(self.client.login(username=same_email[0], password='invalidpassword'))
+        self.assertFalse(self.client.login(username=same_email_variations[0], password='invalidpassword'))
 
     def test_should_not_allow_to_login_for_inactive_user(self):
         self.user.is_active = False
         self.user.save()
-        self.assertFalse(self.client.login(username=same_email[0], password='password'))
+        self.assertFalse(self.client.login(username=same_email_variations[0], password='password'))

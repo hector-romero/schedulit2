@@ -9,7 +9,7 @@ from schedulit.api.utils import BaseSchedulerView
 from schedulit.shift.models import Shift
 
 
-class ShiftView(ModelViewSet, BaseSchedulerView):
+class ShiftView(ModelViewSet[Shift], BaseSchedulerView):
     serializer_class = ShiftSerializer
 
     def get_queryset(self):

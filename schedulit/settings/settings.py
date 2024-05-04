@@ -13,6 +13,10 @@ from datetime import timedelta
 from pathlib import Path
 from django.core.management.commands.runserver import Command as runserver
 
+# https://github.com/typeddjango/django-stubs?tab=readme-ov-file#i-cannot-use-queryset-or-manager-with-type-annotations
+import django_stubs_ext
+django_stubs_ext.monkeypatch()
+
 runserver.default_port = '8000'
 runserver.default_addr = '0.0.0.0'
 

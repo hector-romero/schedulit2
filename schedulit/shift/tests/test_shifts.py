@@ -10,6 +10,10 @@ from schedulit.shift.models import Shift, ShiftNote
 
 
 class ShiftTest(TestCase):
+    employee: User
+    now: datetime
+    now_minus_2hs: datetime
+    now_plus_2hs: datetime
 
     @classmethod
     def setUpTestData(cls):
@@ -36,10 +40,10 @@ class ShiftTest(TestCase):
     def test_should_create_shift(self):
         shift = self.create_shift(start_time=self.now, end_time=self.now_plus_2hs, employee=self.employee)
         self.assertIsNotNone(shift)
-        self.assertEquals(shift.start_time, self.now)
-        self.assertEquals(shift.end_time, self.now_plus_2hs)
-        self.assertEquals(shift.employee_id, self.employee.id)
-        self.assertEquals(shift.status, Shift.Statuses.CREATED)
+        self.assertEqual(shift.start_time, self.now)
+        self.assertEqual(shift.end_time, self.now_plus_2hs)
+        self.assertEqual(shift.employee_id, self.employee.id)
+        self.assertEqual(shift.status, Shift.Statuses.CREATED)
 
     def test_should_not_allow_creating_shift_with_invalid_start_time(self):
         self.assertRaises(ValueError, self.create_shift,
@@ -88,6 +92,8 @@ class ShiftTest(TestCase):
 
 
 class ShiftNoteTest(TestCase):
+    shift: Shift
+
     @classmethod
     def setUpTestData(cls):
         cls.shift = baker.make(Shift)
@@ -104,8 +110,8 @@ class ShiftNoteTest(TestCase):
         note = "some note"
         shift_note = self.create_shift_note(note=note, shift=self.shift)
         self.assertIsNotNone(shift_note)
-        self.assertEquals(shift_note.note, note)
-        self.assertEquals(shift_note.shift_id, self.shift.id)
+        self.assertEqual(shift_note.note, note)
+        self.assertEqual(shift_note.shift_id, self.shift.id)
 
     def test_should_not_allow_to_create_shift_note_with_invalid_note(self):
         self.assertRaises(ValueError, self.create_shift_note, note=None, shift=self.shift)

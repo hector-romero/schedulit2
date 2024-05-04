@@ -1,5 +1,4 @@
 import sys
-
 from schedulit.settings.settings import *
 from schedulit.settings.environment import *
 
