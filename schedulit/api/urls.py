@@ -8,12 +8,12 @@ from schedulit.api.shifts_notes import views as shift_notes_views
 
 urlpatterns = [
     # Authentication
-    path('account/', auth_views.UserProfileView.as_view()),
-    path('account/login/', auth_views.LoginView.as_view()),
-    path('account/logout/', auth_views.LogoutView.as_view()),
-    path('account/logout/all/', auth_views.LogoutAllView.as_view()),
+    path('account/', auth_views.UserProfileView.as_view(), name='account'),
+    path('account/login/', auth_views.LoginView.as_view(), name='account_login'),
+    path('account/logout/', auth_views.LogoutView.as_view(), name='account_logout'),
+    path('account/logout/all/', auth_views.LogoutAllView.as_view(), name='account_logout_all'),
 
-    path('account/register/', auth_views.RegisterView.as_view()),
+    path('account/register/', auth_views.RegisterView.as_view(), name='account_register'),
 
     # TODO Maybe, rename 'users' to 'employees'?
     path('users/', users_views.UsersView.as_view({'get': 'list', 'post': 'create'})),

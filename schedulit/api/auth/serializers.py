@@ -1,11 +1,13 @@
+import typing
+
+from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
-from rest_framework import serializers, exceptions
-from rest_framework.settings import api_settings
+from rest_framework import serializers
 
 from schedulit.authentication.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer['User']):
     instance: 'User'
 
     class Meta:
@@ -14,13 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True, 'required': True},
             'email': {'required': True, 'allow_blank': False},
-            'role': {'required': False, 'write_only': True}
+            'role': {'required': False, 'write_only': True, 'allow_blank': True, 'allow_null': True},
+            'name': {'allow_null': True, 'required': False, 'allow_blank': True},
+            'employee_id': {'allow_null': True, 'required': False, 'allow_blank': True}
         }
 
     # Used to run some special validations in users, namely email constrains,
     # which are not supported out of the box by django-rest-framework; and password
     # which requires other fields of the user to verify rules like "UserAttributeSimilarityValidator"
-    def _get_fake_user_instance(self, attrs: dict):
+    def _get_fake_user_instance(self, attrs: dict[str, typing.Any]) -> 'User':
         user = self.Meta.model.objects.construct_user(
             email=attrs.get('email'),
             password=attrs.get('password'),
@@ -46,13 +50,16 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value: str) -> str:
         try:
             user = self._get_fake_user_instance(self.get_initial())
-            # user.validate_password(password=value)
+            if self.instance:
+                password_validation.password_changed(password=value, user=user)
+            else:
+                password_validation.validate_password(password=value, user=user)
             user.set_password(raw_password=value)
         except ValidationError as e:
             raise serializers.ValidationError(e.messages)
         return value
 
-    def validate(self, attrs: dict) -> dict:
+    def validate(self, attrs: dict[str, typing.Any]) -> dict[str, typing.Any]:
         super().validate(attrs)
         # Using user model validation methods mostly to apply constraints, that are not handled automatically
         # by serializers
@@ -61,14 +68,11 @@ class UserSerializer(serializers.ModelSerializer):
         user.full_clean()
         return attrs
 
-    def create(self, validated_data: dict):
-        try:
-            return self.Meta.model.objects.create_user(
-                email=validated_data.get('email'),
-                password=validated_data.get('password'),
-                name=validated_data.get('name'),
-                role=validated_data.get('role'),
-                employee_id=validated_data.get('employee_id'),
-            )
-        except ValidationError as e:
-            raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: e.messages})
+    def create(self, validated_data: dict[str, typing.Any]) -> 'User':
+        return self.Meta.model.objects.create_user(
+            email=validated_data.get('email'),
+            password=validated_data.get('password'),
+            name=validated_data.get('name'),
+            role=validated_data.get('role'),
+            employee_id=validated_data.get('employee_id'),
+        )

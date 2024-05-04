@@ -1,4 +1,6 @@
-from rest_framework.status import HTTP_200_OK
+import typing
+
+from django.http import HttpResponse, HttpRequest
 
 
 # Allow CORS request for api request.
@@ -8,16 +10,21 @@ class APIMiddleWare:  # pylint: disable=too-few-public-methods
         self.get_response = get_response
         self.api_path = "/api/"
 
-    def __call__(self, request):
+    @staticmethod
+    def set_cors_headers(response: HttpResponse) -> None:
+        response["Access-Control-Allow-Methods"] = "*"  # "GET, POST, PUT, DELETE, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "*"
+        response["Access-Control-Allow-Origin"] = "*"
+
+    def __call__(self, request: HttpRequest) -> typing.Any:
         # Add the account attribute to all the requests for api to avoid having
         # to do the check hasattr(request, 'account')
 
-        response = self.get_response(request)
         if request.path.startswith(self.api_path):
-            # Handling the preflight OPTIONS and return allways 200
             if request.method == 'OPTIONS':
-                response.status_code = HTTP_200_OK
-            response["Access-Control-Allow-Methods"] = "*"  # "GET, POST, PUT, DELETE, OPTIONS"
-            response["Access-Control-Allow-Headers"] = "*"
-            response["Access-Control-Allow-Origin"] = "*"
-        return response
+                response = HttpResponse(headers={"content-length": "0", "content-type": "application/json"})
+            else:
+                response = self.get_response(request)
+            self.set_cors_headers(response)
+            return response
+        return self.get_response(request)

@@ -15,7 +15,7 @@ same_email = [
 class AuthenticationCreateUserTest(TestCase):
 
     @staticmethod
-    def create_user(email: str, role: User.Roles = None, employee_id: str = None):
+    def create_user(email: str, role: User.Roles = None, employee_id: str = None) -> User:
         return User.objects.create_user(email=email, name=None, password=None,
                                         role=role, employee_id=employee_id)
 
@@ -40,7 +40,7 @@ class AuthenticationCreateUserTest(TestCase):
             # self.assertRaises(IntegrityError, self.create_user, email=email, phone=None)
             self.assertRaises(ValidationError, self.create_user, email=email)
 
-    def _test_employee_id(self, employee_id):
+    def _test_employee_id(self, employee_id: str) -> None:
         user = self.create_user(email='test@email.com', employee_id=employee_id)
         self.assertIsNotNone(user)
         self.assertEquals(user.employee_id, employee_id)
@@ -68,6 +68,21 @@ class AuthenticationCreateUserTest(TestCase):
         self.assertTrue(user.is_staff)
         self.assertFalse(user.is_superuser)
 
+    def test_authentication_should_allow_creating_employee_user(self):
+        user = User.objects.create_user(email="employee@email.com", role=User.Roles.EMPLOYEE)
+        self.assertTrue(user.is_employee)
+        self.assertFalse(user.is_scheduler)
+
+    def test_authentication_should_allow_creating_employee_user_by_default(self):
+        user = User.objects.create_user(email="employee_default@email.com")
+        self.assertTrue(user.is_employee)
+        self.assertFalse(user.is_scheduler)
+
+    def test_authentication_should_allow_creating_scheduler_user(self):
+        user = User.objects.create_user(email="scheduler@email.com", role=User.Roles.SCHEDULER)
+        self.assertTrue(user.is_scheduler)
+        self.assertFalse(user.is_employee)
+
     def test_authentication_should_allow_creating_super_user(self):
         user = User.objects.create_user(email="superuser1@email.com", is_superuser=True)
         self.assertTrue(user.is_superuser)
@@ -85,6 +100,8 @@ class AuthenticationCreateUserTest(TestCase):
 
 
 class AuthenticationLoginTest(TestCase):
+    user: User
+
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
