@@ -21,7 +21,7 @@ class LoginTest(ApiTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.url_login = reverse('account_login')
-        cls.user, cls.user2 = baker.make(User, _quantity=2, password=make_password('password'))
+        cls.initialize_users()
 
     def test_should_allow_user_login_with_correct_credentials_and_return_valid_user_token(self):
         # should return token for valid credentials.

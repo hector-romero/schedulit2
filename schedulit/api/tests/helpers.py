@@ -11,6 +11,7 @@ from rest_framework import status
 from schedulit.authentication.models import User
 
 if typing.TYPE_CHECKING:
+    # noinspection PyUnresolvedReferences,PyProtectedMember
     from django.test.client import _MonkeyPatchedWSGIResponse
 
 
@@ -42,7 +43,9 @@ class ApiTestCase(TestCase):
     @classmethod
     def initialize_users(cls) -> None:
         # Creates two users, with the password "password"
-        cls.user, cls.user2 = baker.make(User, _quantity=2, password=make_password('password'))
+        cls.user = baker.make(User, password=make_password('password'), role=User.Roles.SCHEDULER)
+        cls.user2 = baker.make(User, password=make_password('password'), role=User.Roles.EMPLOYEE)
+
         cls.user_token, cls.user_token_str = AuthToken.objects.create(user=cls.user)
         cls.user2_token, cls.user2_token_str = AuthToken.objects.create(user=cls.user2)
 
@@ -64,16 +67,19 @@ class ApiTestCase(TestCase):
     def assert_json_response(self, response: '_MonkeyPatchedWSGIResponse', http_status_code: int,
                              error_type: str | None) -> typing.Any:
         self.assert_response_cors(response)
-        # Uncomment to show the error received in case of getting an unexpected test case fail
-        # if response.status_code != http_status_code or (error_type and response.json().get('type') != error_type):
-        #     print("##### ASSERT RESPONSE FAIL  #######")
-        #     print(http_status_code, error_type)
-        #     print(response.status_code, response.json())
-        #     print("###################################")
+        response_json = response.json()
+        # Show the error received in case of getting an unexpected test case fail
+        # pragma: no cover
+        if response.status_code != http_status_code or \
+                (error_type and response_json.get('type') != error_type):  # pragma: no cover
+            print("##### ASSERT RESPONSE FAIL  #######")
+            print(http_status_code, error_type)
+            print(response.status_code, response.json())
+            print("###################################")
         if error_type:
-            self.assertEqual(response.json().get('type'), error_type)
+            self.assertEqual(response_json.get('type'), error_type)
         self.assertEqual(response.status_code, http_status_code)
-        return response.json()
+        return response_json
 
     def _assert_request_with_json_body(self, method: RequestMethodWithBody, url: str, json_params: typing.Any,
                                        http_status_code: int, error_type: str = None) -> typing.Any:

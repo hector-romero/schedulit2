@@ -16,7 +16,7 @@ urlpatterns = [
     path('account/register/', auth_views.RegisterView.as_view(), name='account_register'),
 
     # TODO Maybe, rename 'users' to 'employees'?
-    path('users/', users_views.UsersView.as_view({'get': 'list', 'post': 'create'})),
+    path('users/', users_views.UsersView.as_view({'get': 'list', 'post': 'create'}), name='users'),
     path('users/<int:pk>/', users_views.UsersView.as_view(
         {'get': 'retrieve', 'put': 'partial_update', 'patch': 'partial_update', 'delete': 'destroy'})),
     path('users/<int:employee_id>/shifts/', shift_views.ShiftView.as_view({'get': 'list', 'post': 'create'})),
