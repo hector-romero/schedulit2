@@ -165,7 +165,7 @@ class LogoutTest(ApiTestCase):
             self.assertEqual(user.employee_id, valid_employee_id or '')
             user.delete()
 
-        # Name is optional, so it should work without it
+        # Employee ID is optional, so it should work without it
         del params['employee_id']
         self.assert_post(self.url_register, params, status.HTTP_200_OK)
         user = User.objects.get(email=pre_user.email)

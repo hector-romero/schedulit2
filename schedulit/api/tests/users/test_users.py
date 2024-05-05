@@ -8,17 +8,9 @@ from rest_framework import status
 
 from schedulit.api.auth.serializers import UserSerializer
 from schedulit.api.tests.helpers import ApiTestCase, RequestMethods
+from schedulit.api.tests.users.helpers import get_user_params
 from schedulit.authentication.models import User
-
-
-CreateUserParams = typing.TypedDict('CreateUserParams', {
-    'email': str, 'password': 'str', 'name': 'str', 'role': User.Roles | str, 'employee_id': str | None
-}, total=False)
-
-
-def get_create_user_params(user: User) -> CreateUserParams:
-    return CreateUserParams(
-        email=user.email, password=user.password, name=user.name, role=user.role, employee_id=user.employee_id)
+from schedulit.utils.tests.helpers import same_email_variations
 
 
 class UsersTest(ApiTestCase):
@@ -47,7 +39,7 @@ class UsersTest(ApiTestCase):
     # User creation
     def test_users_post_should_create_an_new_user(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         response = self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
 
         self.assertIsNotNone(response['id'])
@@ -70,30 +62,24 @@ class UsersTest(ApiTestCase):
         self.assertFalse(AuthToken.objects.filter(user=pre_user).exists())
 
     def test_users_post_should_fail_to_create_user_with_duplicated_email(self):
-        same_email = [
-            'test@email.com',
-            'TEST@email.com',
-            'test@EMAIL.com',
-            'TEST@EMAIL.COM',
-        ]
-        pre_user = baker.prepare(User, email=same_email[0])
-        params = get_create_user_params(pre_user)
+        pre_user = baker.prepare(User, email=same_email_variations[0])
+        params = get_user_params(pre_user)
 
         # First attempt should create ok
         self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
 
-        for email in same_email:
+        for email in same_email_variations:
             params['email'] = email
             self.assert_post(self.url_users, params, status.HTTP_400_BAD_REQUEST)
 
     def test_users_post_should_fail_to_create_user_with_invalid_email(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
-        invalid_emails = [
+        params = get_user_params(pre_user)
+        invalid_emails: typing.List[typing.Any] = [
             'null', None, '1', 'any string', '', '_', '@email.com', 'something@', 'something.com'
         ]
         for invalid_email in invalid_emails:
-            params['email'] = invalid_email  # type: ignore[typeddict-item]
+            params['email'] = invalid_email
             self.assert_post(self.url_users, params, status.HTTP_400_BAD_REQUEST)
 
         del params['email']
@@ -108,13 +94,13 @@ class UsersTest(ApiTestCase):
     ])
     def test_users_post_should_fail_to_create_user_with_invalid_password(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         # List includes empty values, common passwords, too short, and user attributes
-        invalid_passwords = [
+        invalid_passwords: typing.List[typing.Any] = [
             '', None, 'password', '12345678', 'short', pre_user.email, pre_user.name
         ]
         for invalid_password in invalid_passwords:
-            params['password'] = invalid_password  # type: ignore[typeddict-item]
+            params['password'] = invalid_password
             self.assert_post(self.url_users, params, status.HTTP_400_BAD_REQUEST)
 
         del params['password']
@@ -122,10 +108,10 @@ class UsersTest(ApiTestCase):
 
     def test_users_post_should_have_name_as_optional_parameter(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
-        valid_names = [None, 'some name', '', 'null']
+        params = get_user_params(pre_user)
+        valid_names: typing.List[typing.Any] = [None, 'some name', '', 'null']
         for valid_name in valid_names:
-            params['name'] = valid_name  # type: ignore[typeddict-item]
+            params['name'] = valid_name
             self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
             user = User.objects.get(email=pre_user.email)
             self.assertEqual(user.name, valid_name or '')
@@ -140,12 +126,12 @@ class UsersTest(ApiTestCase):
 
     def test_users_post_should_create_employee_user(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         # Employee is the default role for the user, so indicating it or sending a blank value
         # should create an employee
-        valid_roles = [User.Roles.EMPLOYEE, None, '']
+        valid_roles: typing.List[typing.Any] = [User.Roles.EMPLOYEE, None, '']
         for role in valid_roles:
-            params['role'] = role   # type: ignore[typeddict-item]
+            params['role'] = role
             self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
             user = User.objects.get(email=pre_user.email)
             self.assertTrue(user.is_employee)
@@ -159,7 +145,7 @@ class UsersTest(ApiTestCase):
 
     def test_users_post_should_create_scheduler_user(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         params['role'] = User.Roles.SCHEDULER
         self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
         user = User.objects.get(email=pre_user.email)
@@ -167,7 +153,7 @@ class UsersTest(ApiTestCase):
 
     def test_users_post_should_fail_with_invalid_user_role(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         invalid_roles = ["anything", '1', '__']
         for invalid_role in invalid_roles:
             params['role'] = invalid_role
@@ -175,7 +161,7 @@ class UsersTest(ApiTestCase):
 
     def test_users_post_should_have_employee_id_as_optional(self):
         pre_user = baker.prepare(User)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         valid_employee_ids = [None, 'some employee id', '', 'null']
         for valid_employee_id in valid_employee_ids:
             params['employee_id'] = valid_employee_id
@@ -184,7 +170,7 @@ class UsersTest(ApiTestCase):
             self.assertEqual(user.employee_id, valid_employee_id or '')
             user.delete()
 
-        # Name is optional, so it should work without it
+        # Employee ID is optional, so it should work without it
         del params['employee_id']
         self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
         user = User.objects.get(email=pre_user.email)
@@ -193,11 +179,11 @@ class UsersTest(ApiTestCase):
     def test_users_should_fail_if_employee_id_is_already_in_use(self):
         employee_id = random_gen.gen_string(10)
         pre_user = baker.prepare(User, employee_id=employee_id)
-        params = get_create_user_params(pre_user)
+        params = get_user_params(pre_user)
         self.assert_post(self.url_users, params, status.HTTP_201_CREATED)
 
         pre_user2 = baker.prepare(User, employee_id=employee_id)
-        params = get_create_user_params(pre_user2)
+        params = get_user_params(pre_user2)
         self.assert_post(self.url_users, params, status.HTTP_400_BAD_REQUEST)
 
     def test_users_post_should_fail_if_receiving_invalid_json(self):
@@ -217,7 +203,7 @@ class UsersTest(ApiTestCase):
         self.assert_invalid_authentication_header_tests_for_method(RequestMethods.GET, self.url_users)
         self.assert_invalid_authentication_header_tests_for_method(RequestMethods.POST, self.url_users)
 
-    def test_login_should_only_accept_get_and_post(self):
+    def test_users_should_only_accept_get_and_post(self):
         not_accepted_methods = [RequestMethods.PATCH, RequestMethods.PATCH, RequestMethods.DELETE]
         self.assert_not_allowed_methods(not_accepted_methods, self.url_users)
 

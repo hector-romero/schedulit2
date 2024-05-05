@@ -67,14 +67,18 @@ class ApiTestCase(TestCase):
     def assert_json_response(self, response: '_MonkeyPatchedWSGIResponse', http_status_code: int,
                              error_type: str | None) -> typing.Any:
         self.assert_response_cors(response)
-        response_json = response.json()
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            response_json = {}
+        else:
+            response_json = response.json()
+
         # Show the error received in case of getting an unexpected test case fail
         # pragma: no cover
         if response.status_code != http_status_code or \
                 (error_type and response_json.get('type') != error_type):  # pragma: no cover
             print("##### ASSERT RESPONSE FAIL  #######")
             print(http_status_code, error_type)
-            print(response.status_code, response.json())
+            print(response.status_code, response_json)
             print("###################################")
         if error_type:
             self.assertEqual(response_json.get('type'), error_type)
@@ -91,6 +95,15 @@ class ApiTestCase(TestCase):
                     error_type: str = None) -> typing.Any:
         return self._assert_request_with_json_body(
             RequestMethods.POST, url, json_params, http_status_code, error_type)
+
+    def assert_put(self, url: str, json_params: typing.Any, http_status_code: int) -> typing.Any:
+        return self._assert_request_with_json_body(RequestMethods.PUT, url, json_params, http_status_code)
+
+    def assert_patch(self, url: str, json_params: typing.Any, http_status_code: int) -> typing.Any:
+        return self._assert_request_with_json_body(RequestMethods.PATCH, url, json_params, http_status_code)
+
+    def assert_delete(self, url: str, http_status_code: int) -> typing.Any:
+        return self._assert_request_with_json_body(RequestMethods.DELETE, url, {}, http_status_code)
 
     def assert_get(self, url: str, http_status_code: int, data: dict[str, str] = None, error_type: str = None) \
             -> typing.Any:

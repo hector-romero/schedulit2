@@ -2,9 +2,9 @@ import typing
 
 from django.contrib.auth.models import AnonymousUser
 from knox.auth import TokenAuthentication
-from rest_framework import status
+from rest_framework import status, exceptions
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from schedulit.authentication.models import User
 
 if typing.TYPE_CHECKING:
+    # noinspection PyUnresolvedReferences,PyProtectedMember
     from django.utils.functional import _StrPromise
 
 
@@ -20,14 +21,14 @@ def is_authenticated(user: AnonymousUser | User) -> typing.TypeGuard[User]:
 
 
 class IsEmployeeAuthenticated(IsAuthenticated):
-    def has_permission(self, request: Request, view: APIView) -> bool:
+    def has_permission(self, request: Request, _view: APIView) -> bool:
         user = request.user
         return bool(is_authenticated(user) and user.is_employee)
 
 
 class IsSchedulerAuthenticated(IsAuthenticated):
 
-    def has_permission(self, request, view):
+    def has_permission(self, request: Request, _view: APIView) -> bool:
         user = request.user
         return bool(is_authenticated(user) and user.is_scheduler)
 
@@ -36,7 +37,6 @@ class BaseApiView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser]
     authentication_classes = [TokenAuthentication]
-    error_response_status_code = status.HTTP_400_BAD_REQUEST
 
     @staticmethod
     def _response(data: dict[typing.Any, typing.Any], message: '_StrPromise | None', headers: dict[str, str] | None,
@@ -60,3 +60,12 @@ class BaseSchedulerView(APIView):
 
 class BaseEmployeeView(APIView):
     permission_classes = [IsEmployeeAuthenticated]
+
+
+class Catchall404View(BaseApiView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def initial(self, request, *args, **kwargs):
+        # This view will return NotFound() allways!!
+        raise exceptions.NotFound(request.path)

@@ -18,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer['User']):
             'email': {'required': True, 'allow_blank': False},
             'role': {'required': False, 'write_only': True, 'allow_blank': True, 'allow_null': True},
             'name': {'allow_null': True, 'required': False, 'allow_blank': True},
-            'employee_id': {'allow_null': True, 'required': False, 'allow_blank': True}
+            'employee_id': {'allow_null': True, 'required': False, 'allow_blank': True},
+            'last_login': {'read_only': True}
         }
 
     # Used to run some special validations in users, namely email constrains,
@@ -38,8 +39,6 @@ class UserSerializer(serializers.ModelSerializer['User']):
                 user.email = self.instance.email
             if not user.name and attrs.get('name') is None:
                 user.name = self.instance.name
-            if not user.role and attrs.get('role') is None:
-                user.role = self.instance.role
             if not user.employee_id and attrs.get('employee_id') is None:
                 user.employee_id = self.instance.employee_id
             # noinspection PyProtectedMember
@@ -47,13 +46,27 @@ class UserSerializer(serializers.ModelSerializer['User']):
             user._state.adding = False
         return user
 
+    @staticmethod
+    def validate_name(value: str) -> str:
+        return value or ''
+
+    @staticmethod
+    def validate_role(value: str) -> User.Roles:
+        try:
+            return User.Roles(str(value).lower())
+        except ValueError:
+            return User.Roles.EMPLOYEE
+
+    @staticmethod
+    def validate_employee_id(value: str) -> str:
+        return value or ''
+
     def validate_password(self, value: str) -> str:
         try:
             user = self._get_fake_user_instance(self.get_initial())
+            password_validation.validate_password(password=value, user=user)
             if self.instance:
                 password_validation.password_changed(password=value, user=user)
-            else:
-                password_validation.validate_password(password=value, user=user)
             user.set_password(raw_password=value)
         except ValidationError as e:
             raise serializers.ValidationError(e.messages)
@@ -76,3 +89,30 @@ class UserSerializer(serializers.ModelSerializer['User']):
             role=validated_data.get('role'),
             employee_id=validated_data.get('employee_id'),
         )
+
+    def update(self, instance: 'User', validated_data: dict[str, typing.Any]) -> 'User':
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        # If this is a partial update, let default update handle it
+        if self.partial:
+            return super().update(instance, validated_data)
+        # DRF doesn't currently handle correctly non-partial updates:
+        # Due to a wrong behaviour by DRF, when an optional field is provided in a PUT request, instead of being set
+        # to the default value, it just retains its current value in the database, so it does a partial update.
+        # This is not right, since a PUT request should be idempotent, so I'll handle that option manually
+
+        for field in self._writable_fields:
+            # Ignore password field
+            if field.field_name is None or field.field_name == 'password':
+                continue
+            try:
+                field_value = validated_data[field.field_name]
+
+            except KeyError:
+                # noinspection PyProtectedMember
+                field_value = getattr(instance._meta.get_field(field.field_name), 'default', None)
+            setattr(instance, field.field_name, field_value)
+
+        instance.save()
+        return instance

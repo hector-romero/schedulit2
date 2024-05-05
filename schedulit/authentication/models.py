@@ -17,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         SCHEDULER = 'scheduler'
         EMPLOYEE = 'employee'
 
-    name = models.CharField(_("Name"), max_length=150, blank=True)
+    name = models.CharField(_("Name"), max_length=150, blank=True, default='')
     role = Roles.model_field(default=Roles.EMPLOYEE)
     employee_id = models.CharField(verbose_name='Employee ID', max_length=50, default='', blank=True, null=False)
 

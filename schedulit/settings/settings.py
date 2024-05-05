@@ -11,14 +11,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
-from django.core.management.commands.runserver import Command as runserver
+from django.core.management.commands.runserver import Command as RunServerCommand
 
 # https://github.com/typeddjango/django-stubs?tab=readme-ov-file#i-cannot-use-queryset-or-manager-with-type-annotations
 import django_stubs_ext
 django_stubs_ext.monkeypatch()
 
-runserver.default_port = '8000'
-runserver.default_addr = '0.0.0.0'
+RunServerCommand.default_port = '8000'
+RunServerCommand.default_addr = '0.0.0.0'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,4 +165,11 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ]
+}
+
+EXCEPTIONS_HOG = {
+    "EXCEPTION_REPORTING": "exceptions_hog.handler.exception_reporter",
+    "ENABLE_IN_DEBUG": True,
+    "NESTED_KEY_SEPARATOR": "__",
+    "SUPPORT_MULTIPLE_EXCEPTIONS": False,
 }
