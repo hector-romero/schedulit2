@@ -1,3 +1,4 @@
+from rest_framework.parsers import JSONParser
 from rest_framework.viewsets import ModelViewSet
 
 from schedulit.api.auth.serializers import UserSerializer
@@ -7,6 +8,7 @@ from schedulit.authentication.models import User
 
 class UsersView(ModelViewSet[User], BaseSchedulerView):
     serializer_class = UserSerializer
+    parser_classes = [JSONParser]
 
     def get_queryset(self):
         return User.objects.all()

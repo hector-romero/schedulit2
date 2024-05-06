@@ -156,6 +156,7 @@ REST_KNOX = {
 }
 
 REST_FRAMEWORK = {
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S%z",
     'NON_FIELD_ERRORS_KEY': 'detail',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',

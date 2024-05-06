@@ -346,11 +346,11 @@ class UserTest(ApiTestCase):
     # ################################################################
     def test_user_delete_should_remove_user(self):
         self.assert_delete(self.url_user, status.HTTP_204_NO_CONTENT)
-        self.assertRaises(User.DoesNotExist, lambda: self.sample_user.refresh_from_db())
+        self.assertRaises(User.DoesNotExist, self.sample_user.refresh_from_db)
 
         user = baker.make(User)
         self.assert_delete(url_for_user(user), status.HTTP_204_NO_CONTENT)
-        self.assertRaises(User.DoesNotExist, lambda: user.refresh_from_db())
+        self.assertRaises(User.DoesNotExist, user.refresh_from_db)
 
     ################################################################
     # General api tests

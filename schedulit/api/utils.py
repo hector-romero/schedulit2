@@ -20,11 +20,11 @@ def is_authenticated(user: AnonymousUser | User) -> typing.TypeGuard[User]:
     return bool(user and user.is_authenticated)
 
 
-class IsEmployeeAuthenticated(IsAuthenticated):
-    def has_permission(self, request: Request, _view: APIView) -> bool:
-        user = request.user
-        return bool(is_authenticated(user) and user.is_employee)
-
+# class IsEmployeeAuthenticated(IsAuthenticated):
+#     def has_permission(self, request: Request, _view: APIView) -> bool:
+#         user = request.user
+#         return bool(is_authenticated(user) and user.is_employee)
+#
 
 class IsSchedulerAuthenticated(IsAuthenticated):
 
@@ -58,9 +58,9 @@ class BaseSchedulerView(APIView):
     permission_classes = [IsSchedulerAuthenticated]
 
 
-class BaseEmployeeView(APIView):
-    permission_classes = [IsEmployeeAuthenticated]
-
+# class BaseEmployeeView(APIView):
+#     permission_classes = [IsEmployeeAuthenticated]
+#
 
 class Catchall404View(BaseApiView):
     permission_classes = [AllowAny]

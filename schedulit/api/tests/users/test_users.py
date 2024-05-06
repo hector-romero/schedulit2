@@ -15,7 +15,6 @@ from schedulit.utils.tests.helpers import same_email_variations
 
 class UsersTest(ApiTestCase):
     url_users: str
-    employee_users: typing.List[User]
 
     @classmethod
     def setUpTestData(cls):

@@ -1,5 +1,6 @@
 import typing
 
+from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -11,6 +12,7 @@ from schedulit.shift.models import ShiftNote
 
 class ShiftNotesView(ModelViewSet[ShiftNote], BaseSchedulerView):
     serializer_class = ShiftNoteSerializer
+    parser_classes = [JSONParser]
 
     def get_queryset(self):
         queryset = ShiftNote.objects.all()
