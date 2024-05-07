@@ -1,0 +1,24 @@
+name: django
+
+on: workflow_call
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Restore python env
+      id: cache-pipenv-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.local/share/virtualenvs
+          /opt/hostedtoolcache/Python/3.11.6
+        key: "${{ runner.os }}-python-pipenv-3.11.6-${{ hashFiles('Pipfile.lock') }}"
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11.6
+    - name: Running django tests
+      run: pipenv run ./manage.py test

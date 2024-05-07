@@ -1,0 +1,20 @@
+name: Inspections
+
+on: [push]
+#on: workflow_call
+
+jobs:
+  setup:
+    uses: ./.github/workflows/setup.yml
+  pylint:
+    uses: ./.github/workflows/pylint.yml
+    needs: setup
+  flake8:
+    uses: ./.github/workflows/flake8.yml
+    needs: setup
+  mypy:
+    uses: ./.github/workflows/mypy.yml
+    needs: setup
+  django:
+    uses: ./.github/workflows/django.yml
+    needs: [mypy, pylint, flake8]
