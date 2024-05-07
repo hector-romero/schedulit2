@@ -64,3 +64,10 @@ Code typing anotations are checked using mypy
 ```sh
     mypy schedulit
 ```
+
+
+Code testing with coverage:
+
+```sh
+    coverage run
+```
