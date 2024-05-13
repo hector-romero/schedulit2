@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 if typing.TYPE_CHECKING:
     from django_stubs_ext import StrOrPromise
 
+SerializedChoices = typing.TypedDict('SerializedChoices', {'label': str, 'value': str})
+
 
 # Text Choices enum type with a max_length method to use when defining model fields:
 # field = models.CharField(max_length=choices.max_length(), choices=choices())
@@ -16,13 +18,14 @@ class TextChoices(models.TextChoices):
         return max(len(value) for value in cls.values)
 
     @classmethod
-    def model_field(cls, verbose_name: 'StrOrPromise' = None, default: 'TextChoices' = None) -> models.CharField:
+    def model_field(cls, verbose_name: 'StrOrPromise' = None, default: 'TextChoices' = None) \
+            -> 'models.CharField[str, TextChoices]':
         return models.CharField(verbose_name=verbose_name, max_length=cls.max_length(),
                                 choices=cls.choices, default=default)
 
     @classmethod
-    def serialize_choices(cls):
-        return [{'value': value, 'label': label} for value, label in cls.choices]
+    def serialize_choices(cls) -> typing.List[SerializedChoices]:
+        return [SerializedChoices(value=value, label=label) for value, label in cls.choices]
 
 
 class TimestampedModel(models.Model):

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from schedulit.shift.models import Shift
 
 
-class ShiftSerializer(serializers.ModelSerializer):
+class ShiftSerializer(serializers.ModelSerializer[Shift]):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         start_time = attrs.get('start_time')

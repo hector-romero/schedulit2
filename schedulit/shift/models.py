@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +21,7 @@ class Shift(TimestampedModel):
     status = Statuses.model_field(_('Status'), default=Statuses.CREATED)
 
     def __str__(self):
-        def _format_datetime(date):
+        def _format_datetime(date: datetime.datetime) -> str:
             return date.strftime('%Y-%m-%d %H:%M:%S')
         return f"{_format_datetime(self.start_time)} to {_format_datetime(self.end_time)}"
 

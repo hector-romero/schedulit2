@@ -10,15 +10,16 @@ psycopg = "*"
 gunicorn = "*"
 django-rest-framework = "*"
 django-rest-knox = "*"
-install = "*"
 drf-exceptions-hog = "*"
+model-bakery = "*"
+coverage = "*"
+django-stubs = {extras = ["compatible-mypy"], version = "*"}
 
 [dev-packages]
 flake8 = "*"
 pylint-django = "*"
 pylint = "*"
 mypy = "*"
-django-stubs = {extras = ["compatible-mypy"], version = "*"}
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "*"}
 
 [requires]

@@ -6,6 +6,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from schedulit.api.auth.serializers import UserSerializer
 from schedulit.api.utils import BaseApiView
+from schedulit.authentication.models import User
 
 
 # https://jazzband.github.io/django-rest-knox/auth/
@@ -37,7 +38,7 @@ class UserProfileView(BaseApiView):
         return self.success_response({'user': UserSerializer(request.user).data})
 
 
-class RegisterView(generics.CreateAPIView, LoginView):
+class RegisterView(generics.CreateAPIView[User], LoginView):
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
 

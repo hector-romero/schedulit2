@@ -1,5 +1,4 @@
 # Import settings from the environment variables
-
 from enum import Enum
 from pathlib import Path
 
@@ -53,3 +52,6 @@ if env.str('EMAIL_HOST_USER', None):
     EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
 if env.str('EMAIL_HOST_PASSWORD', None):
     EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', '')
+
+if env.str('TEST_RUNNER', None):
+    TEST_RUNNER = env.str('TEST_RUNNER', '')
